@@ -15,6 +15,7 @@ class Modelo(object):
     def entrenar(self, fileName):
         imagenes = utilities.Dimensionar() #crear clase
         en_x, en_y = imagenes.obtener_dimensiones() #obtener el promedio de tamaño de todas las imagenes
+        utilities.Config.setModelSizes(en_x, en_y)
         imagenes.redimensionar(en_x, en_y) #redimensionar todas las imagenes
         x = list() #lista para todas las imagenes
         y = list() #lista para la ruta de cada imagen que representa el codigo en ascii de cada caracter
@@ -62,3 +63,35 @@ class Modelo(object):
         del folder, filePatch
         return self.clf, info
 
+    def predecir(self, clf_patch, image_patch):
+        #TODO: revisar si todos los archivos existen
+        self.clf = joblib.load(clf_patch) #cargar un modelo ya entrenado
+        texto = str()
+        img = cv2.imread(image_patch, 0) #leer la imagen a identificar
+        ret, thresh1 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV) #binarizar
+        contours, hierarchy = cv2.findContours(thresh1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) #obtener todos los contornos
+        caracteres = utilities.Recortar(image_patch, 10, True, "caracteres") #crear clase
+        cuadros = caracteres.contornos(thresh1, contours) #se obtienen todos los cuadros identificados
+        cuadros.sort() #ordenar los cuadros, esto hace que se lea de izquierda a derecha
+        j = 0 #Contador de imagenes
+        j, imganalizar = caracteres.recortes(thresh1, cuadros, j) #obtener la lista con los recortes de imagen
+        dimensiones = utilities.Dimensionar() #crear clase
+        en_x, en_y = dimensiones.obtener_dimensiones()
+        #TODO: Verificar que las imagenes de entrenamiento sigan en promedio con esos tamaños y leer los tamaños del config
+        xSize, ySize = utilities.Config.getModelSizes() #obtener dimensiones desde los datos que guarda el modelo
+        if not (en_x==xSize and en_y==ySize):
+            utilities.Log.d("Hay imágenes nuevas en 'entrenar', vuelva a realizar el modelo.")
+        utilities.Log.i("Comenzando a analizar")
+        for imagen in imganalizar:
+            imagen = cv2.resize(imagen, (xSize, ySize)) #redimensiona la imagen al mismo tamaño con las cuales se entreno el modelo
+            B = np.asarray(imagen).reshape(-1) #convertir imagen a array
+            response = self.clf.predict([B]) #prediccion
+            texto = texto+str(chr(int(response[0]))) #sumar texto
+        utilities.Log.i("Resultado: " + texto)
+        del ret, hierarchy, xSize, ySize, en_x, en_y #eliminar variables
+        
+        return texto, thresh1
+
+    def fPredecir(self, image_patch):
+        pass
+        #TODO: mirar si así se mejora el rendimiento, sin necesidad de cargar el (modelo, config) x veces

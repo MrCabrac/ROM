@@ -1,8 +1,13 @@
 import cv2
 import os
 import utilities
+import modelo
 
-cap = cv2.VideoCapture(0)
+clf_filename = "modelo/modeloEntrenado.pkl" #Ubicacion del modelo entrenado
+
+modelClass = modelo.Modelo()
+
+cap = cv2.VideoCapture(1)
 frameCount = 0 #contar el numero de frames
 
 frames = utilities.Config.frames()
@@ -30,12 +35,29 @@ while True:
             if not os.path.isdir('frame'): #verificar si 'frame' existe
                 os.mkdir('frame')
             else:
-                cv2.imwrite('frame/img.jpg', img) #guardar la imagende interes
+                try:
+                    cv2.imwrite('frame/img.jpg', img) #guardar la imagen de interes
+                    response = modelClass.predecir(clf_filename, "frame/img.jpg")
+                    respuesta = "{} = {}".format(response[0], eval(response[0]))
+                except Exception as error:
+                    respuesta = "{} = 0".format(response[0])
+                    utilities.Log.e(error)
+                utilities.Log.i(respuesta)
+    
+    font                   = cv2.FONT_HERSHEY_SIMPLEX
+    bottomLeftCornerOfText = (0,25)
+    fontScale              = 1
+    fontColor              = (0, 0, 255)
+    lineType               = 2
+
+    cv2.putText(frame, respuesta, bottomLeftCornerOfText, font, fontScale, fontColor, 2)
+    cv2.putText(frame, 'Frames:'+str(frameCount), (0, 0-5), font, fontScale, fontColor, lineType)
+
     
     cv2.imshow('frame', frame)
     #cv2.imshow('gray', gray)
-    #cv2.imshow('thresh_img', thresh_img)
-    #cv2.imshow('interes', frame2)
+    cv2.imshow('thresh_img', thresh_img)
+    cv2.imshow('interes', frame2)
     
     frameCount+=1 #aumentar el contador de frames
 

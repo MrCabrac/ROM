@@ -9,3 +9,5 @@ Modelo		-Carpeta contenedora del modelo predeterminado, no borrar el modelo.
 webcam			-Para analizar video webcam
 metodos			-Contiene a recortar.py, redimensionar.py, train_model.py juntos para mayor implementación.
 main			-Interface gráfica, recomendable ejecutar este archivo.
+
+La única razón por la que se limita a Windows son los comandos os.<command> que se ejecutan para crear carpetas.

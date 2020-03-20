@@ -2,3 +2,7 @@
 frames = 30
 entrenar_patch = entrenar
 save_modelo_patch = modelo
+x_size = 62
+y_size = 85
+#predict config
+margin = 10

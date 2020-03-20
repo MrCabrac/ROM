@@ -14,5 +14,14 @@ import modelo
 #
 # El nombre de las carpetas que contienen las imagenes son el correspondiente desde ASCII al caracter que representan
 
+#Para predecir necesita
+#1. Hacer un modelo
+#2. config.txt que siempre estará en el repositorio
+
 modelClass = modelo.Modelo()
-modelClass.entrenar("modeloEntrenado.pkl")
+
+#To create a model
+#modelClass.entrenar("modeloEntrenado.pkl")
+
+#To predict
+modelClass.predecir("modelo/modeloEntrenado.pkl", "imagenes de prueba/prueba.jpg")
