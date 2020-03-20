@@ -1,0 +1,4 @@
+## no add lines
+frames = 30
+entrenar_patch = entrenar
+save_modelo_patch = modelo
