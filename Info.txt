@@ -1,0 +1,11 @@
+Add		-Archivos no importantes.
+Analizar	-Carpeta donde van las imágenes para analizar individualmente con seleccion.
+Caracteres	-Carpeta donde se guardan todos los recortes de las imagenes analizadas.
+Entrenar 	-Carpeta muy importante, todas las imagenes de entrenamiento.
+Frame		-Carpeta donde se guardan los frames del video.
+Imagenes	-Carpeta para imagenes para analizar en masa.
+Modelo		-Carpeta contenedora del modelo predeterminado, no borrar el modelo.
+
+webcam			-Para analizar video webcam
+metodos			-Contiene a recortar.py, redimensionar.py, train_model.py juntos para mayor implementación.
+main			-Interface gráfica, recomendable ejecutar este archivo.
