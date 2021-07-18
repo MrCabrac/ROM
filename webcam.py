@@ -2,8 +2,17 @@ import cv2
 import os
 import utilities
 import modelo
+import sys
+try:
+    clf_filename = sys.argv[1]
+except IndexError as error:
+    clf_filename = ""
 
-clf_filename = "modelo/modeloEntrenado.pkl" #Ubicacion del modelo entrenado
+# Help
+if(clf_filename == ""):
+    print('You must be specify the model path, like: modelo/modeloEntrenado.pkl')
+
+# clf_filename = "modelo/modeloEntrenado2.pkl" #Ubicacion del modelo entrenado
 
 modelClass = modelo.Modelo()
 
@@ -12,7 +21,7 @@ frameCount = 0 #contar el numero de frames
 
 frames = utilities.Config.frames()
 
-while True:
+while True and clf_filename!="":
     ret, frame = cap.read() #captura frame by frame
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) #pasar el frame a escala de grises
     ret, thresh_img = cv2.threshold(gray, 91, 255, cv2.THRESH_BINARY_INV) #binarizar el frame
@@ -64,5 +73,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-cap.release()
-cv2.destroyAllWindows()
+if clf_filename!="":
+    cap.release()
+    cv2.destroyAllWindows()

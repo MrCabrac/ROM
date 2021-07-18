@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Jul 17 22:27:15 2021
+
+@author: Brayan.Martinez
+"""
+
 import os.path as path
 from os import listdir
 from os import walk
@@ -5,6 +12,9 @@ import cv2
 import numpy as np
 
 class Log():
+    '''
+        Recibe mensajes con diferente contexto para mostrar por consola
+    '''
     def i(text):
         print("LOG:INFO -- ", text)
     
@@ -21,9 +31,10 @@ class Config(object):
                 text = f.readlines()
                 if text[2].split("=")[0].strip() == 'entrenar_patch':
                     entrenarPatch = text[2].split("=")[1].strip()
+                    Log.d('Carpeta entrenar encontrada desde config.txt: "'+entrenarPatch+'"')
         except:
             entrenarPatch = 'entrenar'
-            Log.e("La carpeta de 'entrenar' no fué encontrada")
+            Log.e("La carpeta de 'entrenar' no fué encontrada, revise que config.txt está disponible")
         return entrenarPatch
 
     def saveModelPatch():
@@ -88,16 +99,22 @@ class Dimensionar(object):
                 dimensiones_y.append(y)
                 en_x = int(np.mean(dimensiones_x))
                 en_y = int(np.mean(dimensiones_y))
-
         del dimensiones_x, dimensiones_y
+        if en_x*en_y == 0:
+            raise "No hay imágenes de entrenamiento X|{} Y|{}".format(en_x, en_y)
+        else:
+            Log.d("X|{} Y|{}".format(en_x, en_y))
         return en_x, en_y
 
     def redimensionar(self, x, y):
         for (path, ficheros, archivos) in walk(self.entrenarPatch):
             for imagen in archivos:
                 img = cv2.imread(path+'/'+imagen, 0)
-                img = cv2.resize(img, (x, y))
-                cv2.imwrite(path+'/'+imagen, img)
+                img_y, img_x = img.shape
+                if not (img_x == x) and (img_y == y):
+                    img = cv2.resize(img, (x, y))
+                    Log.d("Resizing img{}".format(imagen))
+                    cv2.imwrite(path+'/'+imagen, img)
         return True
 
 class Recortar(object):
@@ -186,3 +203,24 @@ class Recortar(object):
                     cv2.imwrite(self.saved+"/caracter{}.jpg".format(j), recorte)
             j+=1
         return j, imagenes
+
+class main():
+    def checkLog():
+        Log.d("debug message")
+        Log.e("error message")
+        Log.i("information message")
+
+    def checkConfig():
+        Config.entrenarPatch()
+
+    def CheckDimensionar():
+        dim = Dimensionar()
+        dim.obtener_dimensiones()
+
+if __name__ == "__main__":
+    print("Running utilities.py")
+    # main.checkLog()
+    # main.checkConfig()
+    # main.CheckDimensionar()
+else:
+    print("Opening utilities.py")

@@ -1,4 +1,9 @@
 import modelo
+import sys
+try:
+    firstCommand = sys.argv[1]
+except IndexError as error:
+    firstCommand = ""
 
 #Para entrenar solo se necesita una carpeta llamada 'entrenar' y dentro de esta la siguiente estructura
 #
@@ -18,10 +23,27 @@ import modelo
 #1. Hacer un modelo
 #2. config.txt que siempre estará en el repositorio
 
-modelClass = modelo.Modelo()
+# Help
+if(firstCommand == ""):
+    print("train 'modeloEntrenado.pkl'")
+    print("predict 'modelo/modeloEntrenado.pkl' 'imagenes de prueba/prueba.jpg'")
 
 #To create a model
-#modelClass.entrenar("modeloEntrenado.pkl")
+if(firstCommand == "train"):
+    '''
+    secondCommand must be like "modeloEntrenado.pkl"
+    '''
+    modelClass = modelo.Modelo()
+    secondCommand = sys.argv[2]
+    modelClass.entrenar(secondCommand)
 
 #To predict
-modelClass.predecir("modelo/modeloEntrenado.pkl", "imagenes de prueba/prueba.jpg")
+if(firstCommand == "predict"):
+    '''
+    secondCommand is a trained model and must be like "modelo/modeloEntrenado.pkl"
+    thirdCommand is an image and must be like "imagenes de prueba/prueba.jpg"
+    '''
+    modelClass = modelo.Modelo()
+    secondCommand = sys.argv[2]
+    thirdCommand = sys.argv[3]
+    modelClass.predecir(secondCommand, thirdCommand)
